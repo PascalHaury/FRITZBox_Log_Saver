@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 src/settings.yaml
 *.csv
+src/debug_event_log_data.*

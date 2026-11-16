@@ -250,21 +250,25 @@ def get_fritzbox_event_log(url:str, sid: str, excludes: list) -> list:
         # print(event_log_data)
         jdata = json.loads(event_log_data)
         logData = jdata.get("data").get("log")
+        if os.environ.get("DEBUG") is not None:
+            with open("debug_event_log_data.txt","wt") as of:
+                print(json.dumps(jdata, indent=2), file=of)
+            with open("debug_event_log_data.json","wt") as of:
+                print(json.dumps(logData, indent=2), file=of)
         csvData = []
         for entry in list(logData)[::-1]:
-            Message = entry[2]
+            Message = entry["msg"]
             if not is_excluded(Message, excludes):
                 cdata = {
-                    "Timestamp": f'{unix_timestamp_from_strings(entry[0], entry[1])}',
-                    "Date": entry[0],
-                    "Time": entry[1],
-                    "Message": entry[2],
-                    "Code": entry[3],
+                    "Timestamp": f'{unix_timestamp_from_strings(entry["date"], entry["time"])}',
+                    "Date": entry["date"],
+                    "Time": entry["time"],
+                    "Message": entry["msg"],
+                    "Code": entry["id"],
                 }
                 csvData.append(cdata)
             # else:
             #     print(f"Excluded Message: {Message}")
-            
 
         return csvData
     else:
